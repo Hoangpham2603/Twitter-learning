@@ -456,7 +456,7 @@ export const updateMeValidator = validate(
         isLength: {
           options: {
             min: 1,
-            max: 200
+            max: 500
           },
           errorMessage: USERS_MESSAGES.BIO_LENGTH
         }

@@ -11,6 +11,7 @@ import {
   getMeController,
   updateMeController
 } from '~/controllers/users.controller'
+import { filterMiddlewares } from '~/middlewares/common.middlewares'
 import {
   accessTokenValidator,
   emailVerifyTokenValidator,
@@ -122,6 +123,7 @@ usersRouter.patch(
   accessTokenValidator,
   verifiedUserValidator,
   updateMeValidator,
+  filterMiddlewares(['name', 'date_of_birth', 'bio', 'location', 'website', 'avatar', 'username', 'cover_photo']),
   wrapRequestHandler(updateMeController)
 )
 
