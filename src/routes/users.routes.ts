@@ -9,21 +9,30 @@ import {
   verifyForgotPasswordController,
   resetPasswordController,
   getMeController,
-  updateMeController
+  updateMeController,
+  getProfileController,
+  followController,
+  unfollowController,
+  changePasswordController,
+  oauthController
 } from '~/controllers/users.controller'
 import { filterMiddlewares } from '~/middlewares/common.middlewares'
 import {
   accessTokenValidator,
+  changePasswordValidator,
   emailVerifyTokenValidator,
+  followValidator,
   forgotPasswordValidator,
   loginValidator,
   refreshTokenValidator,
   registerValidator,
   resetPasswordValidator,
+  unfollowValidator,
   updateMeValidator,
   verifiedUserValidator,
   verifyForgotPasswordTokenValidator
 } from '~/middlewares/users.middlewares'
+import { UpdateMeReqBody } from '~/models/requests/User.request'
 import { wrapRequestHandler } from '~/utils/handlers'
 
 const usersRouter = express.Router()
@@ -34,8 +43,15 @@ const usersRouter = express.Router()
  * method: POST
  * Body: { email: string, password: string}
  */
-
 usersRouter.post('/login', loginValidator, wrapRequestHandler(loginController))
+
+/**
+ * Description: OAuth with Google
+ * Path: /oauth/google
+ * method: GET
+ * Query: {query}
+ */
+usersRouter.get('/oauth/google', wrapRequestHandler(oauthController))
 
 /**
  * Description: Register a new user
@@ -103,7 +119,7 @@ usersRouter.post(
 usersRouter.post('/reset-password', resetPasswordValidator, wrapRequestHandler(resetPasswordController))
 
 /**
- * Description: get my profile
+ * Description: get me profile
  * Path: /me
  * method: GET
  * Headers: {Authorization: Bearer <access_token>}
@@ -123,8 +139,70 @@ usersRouter.patch(
   accessTokenValidator,
   verifiedUserValidator,
   updateMeValidator,
-  filterMiddlewares(['name', 'date_of_birth', 'bio', 'location', 'website', 'avatar', 'username', 'cover_photo']),
+  filterMiddlewares<UpdateMeReqBody>([
+    'name',
+    'date_of_birth',
+    'bio',
+    'location',
+    'website',
+    'avatar',
+    'username',
+    'cover_photo'
+  ]),
   wrapRequestHandler(updateMeController)
 )
+///^(?![0-9]+$)[A-Za-z0-9_]{4,15}$/
 
+/**
+ * Description: get user profile
+ * Path: /:username
+ * method: GET
+ * Body: {User}
+ */
+usersRouter.get('/:username', wrapRequestHandler(getProfileController))
+
+/**
+ * Description: follow someone
+ * POST: /follow
+ * method: POST
+ * Headers: {Authorization: Bearer <access_token>}
+ * Body: {followed_user_id: string}
+ */
+usersRouter.post(
+  '/follow',
+  accessTokenValidator,
+  verifiedUserValidator,
+  followValidator,
+  wrapRequestHandler(followController)
+)
+
+/**
+ * Description: Unfollow someone
+ * POST: /follow/user_id
+ * method: DELETE
+ * Headers: {Authorization: Bearer <access_token>}
+ * Body: {followed_user_id: string}
+ */
+usersRouter.post(
+  '/follow',
+  accessTokenValidator,
+  verifiedUserValidator,
+  unfollowValidator,
+  wrapRequestHandler(unfollowController)
+)
+
+/**
+ * Description: Change password
+ * POST: /change-password
+ * method: PUT
+ * Headers: {Authorization: Bearer <access_token>}
+ * Body: {old_password: string, password:string, confirm_password: string}
+ */
+usersRouter.put(
+  '/change-password',
+  accessTokenValidator,
+  verifiedUserValidator,
+  changePasswordValidator,
+  wrapRequestHandler(changePasswordController)
+)
 export default usersRouter
