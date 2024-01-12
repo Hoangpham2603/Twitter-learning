@@ -10,11 +10,14 @@ import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRoute from './routes/static.route'
 import staticRouter from './routes/static.route'
 config()
-databaseService.connect()
+databaseService.connect().then(() => {
+  databaseService.indexUsers()
+  databaseService.indexRefreshToken()
+  databaseService.indexFollower()
+  // databaseService.indexVideoStatus()
+})
 const app = express()
 const port = process.env.PORT || 4000
-
-console.log(process.argv)
 
 // Tạo folder upload:
 initFolder()

@@ -285,7 +285,6 @@ export const refreshTokenValidator = validate(
   checkSchema(
     {
       refresh_token: {
-        trim: true,
         custom: {
           options: async (value: string, { req }) => {
             if (!value) {
@@ -317,7 +316,8 @@ export const refreshTokenValidator = validate(
             }
             return true
           }
-        }
+        },
+        trim: true
       }
     },
     ['body']

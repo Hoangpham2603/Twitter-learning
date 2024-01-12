@@ -1,7 +1,8 @@
 import { Request, Response } from 'express'
 import { File } from 'formidable'
 import fs from 'fs'
-import { UPLOAD_IMAGE_TEMP_DIR, UPLOAD_VIDEO_TEMP_DIR } from '~/constants/dir'
+import path from 'path'
+import { UPLOAD_IMAGE_TEMP_DIR, UPLOAD_VIDEO_DIR, UPLOAD_VIDEO_TEMP_DIR } from '~/constants/dir'
 
 // check to see if we have image/video folder. if not init one.
 export const initFolder = () => {
@@ -56,10 +57,22 @@ export const getExtension = (fullname: string) => {
   return namearr[namearr.length - 1]
 }
 
+// cách 1: tạo unique id cho video ngay từ đầu.
+// cách 2: đợi video upload xong rồi tạo folder, move video vào
+
+// cách xử lý khi upload video và encode
+// có 2 giai đoạn:
+//Upload Video: Upload video thành công thì result về cho người dùng.
+//Encode video: khai báo thêm 1 url endpoint để check xem cái video đó đa encode xong chưa.
 export const handleUploadVideo = async (req: Request) => {
   const formidable = (await import('formidable')).default
+
+  const nanoId = (await import('nanoid')).nanoid
+  const idName = nanoId()
+  const folderPath = path.resolve(UPLOAD_VIDEO_DIR, idName)
+  fs.mkdirSync(path.resolve(UPLOAD_VIDEO_DIR, idName))
   const form = formidable({
-    uploadDir: UPLOAD_VIDEO_TEMP_DIR,
+    uploadDir: folderPath,
     maxFiles: 1,
     maxFieldsSize: 50 * 1024 * 1024, // 50mb
     filter: function ({ name, originalFilename, mimetype }) {
@@ -68,6 +81,9 @@ export const handleUploadVideo = async (req: Request) => {
         form.emit('error' as any, new Error('File type is not valid') as any)
       }
       return valid
+    },
+    filename: function () {
+      return idName
     }
   })
   return new Promise<File[]>((resolve, reject) => {
@@ -85,6 +101,7 @@ export const handleUploadVideo = async (req: Request) => {
         const ext = getExtension(video.originalFilename as string)
         fs.renameSync(video.filepath, video.filepath + '.' + ext)
         video.newFilename = video.newFilename + '.' + ext
+        video.filepath = video.filepath + '' + ext
       })
 
       resolve(files.video as File[])

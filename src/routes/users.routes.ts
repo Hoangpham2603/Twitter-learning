@@ -14,7 +14,8 @@ import {
   followController,
   unfollowController,
   changePasswordController,
-  oauthController
+  oauthController,
+  refreshTokenController
 } from '~/controllers/users.controller'
 import { filterMiddlewares } from '~/middlewares/common.middlewares'
 import {
@@ -64,13 +65,21 @@ usersRouter.get('/oauth/google', wrapRequestHandler(oauthController))
 usersRouter.post('/register', registerValidator, wrapRequestHandler(registerController))
 
 /**
- * Description: logout a new user
+ * Description. Logout a user
  * Path: /logout
- * method: POST
- * header: {Authorization: Bearer <access_token>}
- * Body: { refresh_token: string}
+ * Method: POST
+ * Header: { Authorization: Bearer <access_token> }
+ * Body: { refresh_token: string }
  */
 usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapRequestHandler(logoutController))
+
+/**
+ * Description: refresh token
+ * Path: /refresh-token
+ * method: POST
+ * Body: { refresh_token: string}
+ */
+usersRouter.post('/refresh-token', refreshTokenValidator, wrapRequestHandler(refreshTokenController))
 
 /**
  * Description: verify email when user clicked on the link send in email
