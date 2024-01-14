@@ -30,23 +30,33 @@ class DatabaseService {
     }
   }
 
-  indexUsers() {
-    this.users.createIndex({ email: 1, password: 1 })
-    this.users.createIndex({ email: 1 }, { unique: true })
-    this.users.createIndex({ username: 1 }, { unique: true })
+  async indexUsers() {
+    const exists = await this.users.indexExists(['email_1_password_1', 'username_1', 'email_1'])
+    if (!exists) {
+      this.users.createIndex({ email: 1, password: 1 })
+      this.users.createIndex({ email: 1 }, { unique: true })
+      this.users.createIndex({ username: 1 }, { unique: true })
+    }
   }
 
-  indexRefreshToken() {
+  async indexRefreshToken() {
+    const exists = await this.refreshToken.indexExists(['exp_1', 'token_1'])
     this.refreshToken.createIndex({ token: 1 })
     this.refreshToken.createIndex({ exp: 1 }, { expireAfterSeconds: 0 })
   }
 
-  // indexVideoStatus() {
-  //   this.video_status.createIndex({ name: 1 })
+  //async indexVideoStatus() {
+  // exists = await this.videoStatus.indexExists(['name_1'])
+  // if(!exists) {
+  // this.video_status.createIndex({ name: 1 })
+  // }
   // }
 
-  indexFollower() {
-    this.followers.createIndex({ user_id: 1, followed_user_id: 1 })
+  async indexFollower() {
+    const exists = await this.followers.indexExists(['user_id_1_followed_user_id_1'])
+    if (!exists) {
+      this.followers.createIndex({ user_id: 1, followed_user_id: 1 })
+    }
   }
 
   get users(): Collection<User> {
