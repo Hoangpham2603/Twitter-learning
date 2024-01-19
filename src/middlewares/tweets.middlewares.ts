@@ -70,7 +70,7 @@ export const createTweetValidator = validate(
         options: (value, { req }) => {
           // Yêu cầu mỗi phần từ trong array là string
           if (value.some((item: any) => typeof item !== 'string')) {
-            throw Error(TWEETS_MESSAGES.HASHTAGS_MUST_BE_AN_ARRAY_OF_STRING)
+            throw new Error(TWEETS_MESSAGES.HASHTAGS_MUST_BE_AN_ARRAY_OF_STRING)
           }
           return true
         }
