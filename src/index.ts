@@ -6,11 +6,11 @@ import mediaRouter from './routes/medias.routes'
 import { initFolder } from './utils/file'
 import { config } from 'dotenv'
 
-import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from './constants/dir'
-import staticRoute from './routes/static.route'
+import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/static.route'
 import tweetsRouter from './routes/tweet.routes'
-import bookmartRouter from './routes/bookmarks.routes'
+import bookmarkRouter from './routes/bookmarks.routes'
+import likesRouter from './routes/likes.routes'
 config()
 databaseService.connect().then(() => {
   databaseService.indexUsers()
@@ -29,7 +29,8 @@ app.use(express.json())
 app.use('/users', usersRouter)
 app.use('/medias', mediaRouter)
 app.use('/tweets', tweetsRouter)
-app.use('/bookmarks', bookmartRouter)
+app.use('/bookmarks', bookmarkRouter)
+app.use('/likes', likesRouter)
 app.use('/static', staticRouter)
 app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 

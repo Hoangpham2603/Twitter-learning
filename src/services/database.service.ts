@@ -6,6 +6,7 @@ import Follower from '~/models/schemas/Followers.schema'
 import Tweet from '~/models/schemas/Tweet.schema'
 import Hashtag from '~/models/schemas/Hashtag.schema'
 import Bookmark from '~/models/schemas/Bookmark.schema'
+import LikeTweet from '~/models/schemas/Likes.schema'
 
 config()
 
@@ -80,6 +81,10 @@ class DatabaseService {
 
   get bookmarks(): Collection<Bookmark> {
     return this.db.collection(process.env.DB_BOOKMARK_COLLECTION as string)
+  }
+
+  get Likes(): Collection<LikeTweet> {
+    return this.db.collection(process.env.DB_LIKES_COLLECTION as string)
   }
 
   get followers(): Collection<Follower> {

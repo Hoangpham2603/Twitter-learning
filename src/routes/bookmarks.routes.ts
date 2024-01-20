@@ -1,9 +1,9 @@
 import { Router } from 'express'
-import { bookmarkTweetController } from '~/controllers/bookmarks.controller'
+import { bookmarkTweetController, unBookmarkTweetController } from '~/controllers/bookmarks.controller'
 import { accessTokenValidator, verifiedUserValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
 
-const bookmartRouter = Router()
+const bookmarkRouter = Router()
 
 /**
  * Description: Bookmart Tweet
@@ -13,7 +13,20 @@ const bookmartRouter = Router()
  * Header: {Authorization: Bearer<access_token>}
  *
  */
+bookmarkRouter.post('/', accessTokenValidator, verifiedUserValidator, wrapRequestHandler(bookmarkTweetController))
 
-bookmartRouter.post('/', accessTokenValidator, verifiedUserValidator, wrapRequestHandler(bookmarkTweetController))
+/**
+ * Description: UnBookmart Tweet
+ * Path: /:tweet_id
+ * Methos: DELETE
+ * Header: {Authorization: Bearer<access_token>}
+ *
+ */
+bookmarkRouter.delete(
+  '/tweets/:tweet_id',
+  accessTokenValidator,
+  verifiedUserValidator,
+  wrapRequestHandler(unBookmarkTweetController)
+)
 
-export default bookmartRouter
+export default bookmarkRouter
