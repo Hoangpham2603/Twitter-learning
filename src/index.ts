@@ -11,6 +11,7 @@ import staticRouter from './routes/static.route'
 import tweetsRouter from './routes/tweet.routes'
 import bookmarkRouter from './routes/bookmarks.routes'
 import likesRouter from './routes/likes.routes'
+// import '~/utils/fake'
 config()
 databaseService.connect().then(() => {
   databaseService.indexUsers()

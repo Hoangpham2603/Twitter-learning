@@ -9,9 +9,17 @@ import likeServices from '~/services/likes.services'
 export const likesTweetController = async (req: Request<ParamsDictionary, any, LikeTweetReqBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const result = await likeServices.LikeTweet(user_id, req.body.tweet_id)
-  console.log(result)
   return res.json({
     message: LIKE_MESSAGES.LIKE_SUCCESSFULLY,
+    result
+  })
+}
+export const UnLikesTweetController = async (req: Request, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const result = await likeServices.unLikeTweet(user_id, req.params.tweet_id)
+  console.log(result)
+  return res.json({
+    message: LIKE_MESSAGES.UNLIKE_SUCCESSFULLY,
     result
   })
 }

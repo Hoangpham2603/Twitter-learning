@@ -31,6 +31,7 @@ export const loginController = async (req: Request, res: Response) => {
   const user: any = req.user as User
   const user_id = user._id as ObjectId
   const result = await userService.login({ user_id: user_id.toString(), verify: user.verify })
+  console.log(user.email_verify_token)
   return res.json({
     message: USERS_MESSAGES.LOGIN_SUCCESS,
     result
