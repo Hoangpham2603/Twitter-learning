@@ -3,6 +3,7 @@ import { TweetAudience, TweetType } from '~/constants/enums'
 import { Media } from '../Other'
 
 interface TweetConstructor {
+  // tham số để đưa vào class
   _id?: ObjectId
   user_id: ObjectId
   type: TweetType
@@ -19,6 +20,7 @@ interface TweetConstructor {
 }
 
 export default class Tweet {
+  // go to db
   _id?: ObjectId
   user_id: ObjectId
   type: TweetType
@@ -26,7 +28,7 @@ export default class Tweet {
   content: string
   parent_id: null | ObjectId //  chỉ null khi tweet gốc
   hashtags: ObjectId[]
-  mentions: ObjectId[]
+  mentions: ObjectId[] // get user_id from userName
   medias: Media[]
   guest_views: number
   user_views: number

@@ -7,9 +7,9 @@ import { TweetType } from '~/constants/enums'
 
 class TweetsService {
   async checkAndCreateHashTag(hashtags: string[]) {
-    const hastagDocuments = await Promise.all(
+    const hashtagDocuments = await Promise.all(
       hashtags.map((hashtag) => {
-        // Tìm hashtag trong database, nếu có thì lấy, không thì tạo mới
+        // find hastag in database. if not found create one.
         return databaseService.hashtags.findOneAndUpdate(
           { name: hashtag },
           {
@@ -22,7 +22,7 @@ class TweetsService {
         )
       })
     )
-    return hastagDocuments.map((hashtag) => (hashtag as WithId<Hashtag>)._id)
+    return hashtagDocuments.map((hashtag) => (hashtag as WithId<Hashtag>)._id)
   }
   async createTweet(user_id: string, body: TweetRequestBody) {
     const hashtags = await this.checkAndCreateHashTag(body.hashtags)
@@ -239,6 +239,26 @@ class TweetsService {
       tweets,
       total
     }
+  }
+
+  async getNewFeeds({ user_id, limit, page }: { user_id: string; limit: number; page: number }) {
+    const followed_user_ids = await databaseService.followers
+      .find(
+        { user_id: new ObjectId(user_id) },
+        {
+          projection: {
+            followed_user_id: 1,
+            _id: 0
+          }
+        }
+      )
+      .toArray()
+
+    const ids = followed_user_ids.map((item) => item.followed_user_id)
+    // Mong muốn newfeed sẽ lấy luôn cả tweet của mình.
+    ids.push(new ObjectId(user_id))
+    const tweets = await databaseService.tweets.aggregate()
+    return followed_user_ids
   }
 }
 
